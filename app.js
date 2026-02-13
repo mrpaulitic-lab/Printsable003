@@ -18,11 +18,15 @@ function createProduct() {
 }
 
 function renderProducts() {
-  const list = document.getElementById('products');
-  list.innerHTML = '';
+  const table = document.getElementById('products');
+  table.innerHTML = '';
 
   products.forEach(p => {
-    list.innerHTML += `<li>${p.name}</li>`;
+    table.innerHTML += `
+      <tr>
+        <td>${p.name}</td>
+      </tr>
+    `;
   });
 }
 
@@ -38,18 +42,24 @@ function createOrder() {
 }
 
 function renderOrders() {
-  const list = document.getElementById('orders');
-  list.innerHTML = '';
+  const table = document.getElementById('orders');
+  table.innerHTML = '';
 
   orders.forEach(order => {
-    list.innerHTML += `
-      <li>
-        ${order.details}
-        <span class="status ${order.status}">
-          ${order.status}
-        </span>
-        ${order.status === 'pending' ? `<button onclick="fulfill(${order.id})">Fulfill</button>` : ''}
-      </li>
+    table.innerHTML += `
+      <tr>
+        <td>${order.details}</td>
+        <td>
+          <span class="status ${order.status}">
+            ${order.status}
+          </span>
+        </td>
+        <td>
+          ${order.status === 'pending'
+            ? `<button onclick="fulfill(${order.id})">Fulfill</button>`
+            : ''}
+        </td>
+      </tr>
     `;
   });
 }
