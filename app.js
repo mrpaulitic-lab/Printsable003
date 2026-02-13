@@ -1,5 +1,10 @@
-let products = [];
-let orders = [];
+let products = JSON.parse(localStorage.getItem('products')) || [];
+let orders = JSON.parse(localStorage.getItem('orders')) || [];
+
+function save() {
+  localStorage.setItem('products', JSON.stringify(products));
+  localStorage.setItem('orders', JSON.stringify(orders));
+}
 
 function createProduct() {
   const input = document.getElementById('productName');
@@ -8,6 +13,7 @@ function createProduct() {
 
   products.push({ id: Date.now(), name });
   input.value = '';
+  save();
   renderProducts();
 }
 
@@ -27,6 +33,7 @@ function createOrder() {
 
   orders.push({ id: Date.now(), details, status: 'pending' });
   input.value = '';
+  save();
   renderOrders();
 }
 
@@ -52,5 +59,9 @@ function fulfill(id) {
   if (!order) return;
 
   order.status = 'fulfilled';
+  save();
   renderOrders();
 }
+
+renderProducts();
+renderOrders();
