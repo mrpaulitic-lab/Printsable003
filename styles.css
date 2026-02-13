@@ -1,0 +1,23 @@
+body {
+  font-family: Arial, sans-serif;
+  padding: 40px;
+}
+
+button {
+  margin-left: 5px;
+}
+
+.status {
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.pending {
+  background: #fef3c7;
+}
+
+.fulfilled {
+  background: #dcfce7;
+}
