@@ -8,21 +8,67 @@
 </head>
 <body>
 
-<h1>Printsable Admin</h1>
+<div class="layout">
 
-<h2>Create Product</h2>
-<input id="productName" placeholder="Product name" />
-<button onclick="createProduct()">Add Product</button>
+  <aside class="sidebar">
+    <h2>Printsable</h2>
+    <nav>
+      <div>Dashboard</div>
+      <div>Products</div>
+      <div>Orders</div>
+      <div>Fulfillment</div>
+    </nav>
+  </aside>
 
-<h2>Products</h2>
-<ul id="products"></ul>
+  <main class="main">
 
-<h2>Create Order</h2>
-<input id="orderDetails" placeholder="Order details" />
-<button onclick="createOrder()">Create Order</button>
+    <header class="topbar">
+      <h1>Admin Dashboard</h1>
+    </header>
 
-<h2>Orders</h2>
-<ul id="orders"></ul>
+    <section class="cards">
+      <div class="card">
+        <h3>Create Product</h3>
+        <input id="productName" placeholder="Product name" />
+        <button onclick="createProduct()">Add</button>
+      </div>
+
+      <div class="card">
+        <h3>Create Order</h3>
+        <input id="orderDetails" placeholder="Order details" />
+        <button onclick="createOrder()">Add</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>Products</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+          </tr>
+        </thead>
+        <tbody id="products"></tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h3>Orders</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Details</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="orders"></tbody>
+      </table>
+    </section>
+
+  </main>
+
+</div>
 
 <script src="app.js"></script>
 </body>
