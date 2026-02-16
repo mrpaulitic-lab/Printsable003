@@ -9,51 +9,118 @@ exports.handler = async (event) => {
   const method = event.httpMethod;
   const path = event.path.replace('/.netlify/functions/api', '');
 
-  if (path === '/products' && method === 'GET') {
-    const { data, error } = await supabase.from('products').select('*');
-    return response(data, error);
-  }
+  try {
+    // ===============================
+    // GET PRODUCTS
+    // ===============================
+    if (path === '/products' && method === 'GET') {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('is_active', true);
 
-  if (path === '/products' && method === 'POST') {
-    const body = JSON.parse(event.body);
-    const { data, error } = await supabase
-      .from('products')
-      .insert([{ name: body.name }])
-      .select();
-    return response(data, error);
-  }
+      if (error) throw error;
 
-  if (path === '/orders' && method === 'GET') {
-    const { data, error } = await supabase.from('orders').select('*');
-    return response(data, error);
-  }
+      return success(data);
+    }
 
-  if (path === '/orders' && method === 'POST') {
-    const body = JSON.parse(event.body);
-    const { data, error } = await supabase
-      .from('orders')
-      .insert([{ details: body.details }])
-      .select();
-    return response(data, error);
-  }
+    // ===============================
+    // CREATE ORDER
+    // ===============================
+    if (path === '/orders' && method === 'POST') {
+      const body = JSON.parse(event.body);
 
-  if (path === '/fulfill' && method === 'POST') {
-    const body = JSON.parse(event.body);
-    const { data, error } = await supabase
-      .from('orders')
-      .update({ status: 'fulfilled' })
-      .eq('id', body.id)
-      .select();
-    return response(data, error);
-  }
+      const { data: product, error: productError } = await supabase
+        .from('products')
+        .select('*')
+        .eq('id', body.product_id)
+        .single();
 
-  return response({ message: 'Not found' }, null, 404);
+      if (productError) throw productError;
+
+      const total = product.base_price * (body.quantity || 1);
+
+      const { data, error } = await supabase
+        .from('orders')
+        .insert([
+          {
+            product_id: product.id,
+            customer_name: body.customer_name,
+            customer_email: body.customer_email,
+            quantity: body.quantity || 1,
+            file_url: body.file_url,
+            total_price: total,
+            status: 'pending'
+          }
+        ])
+        .select();
+
+      if (error) throw error;
+
+      return success(data);
+    }
+
+    // ===============================
+    // GET ORDERS
+    // ===============================
+    if (path === '/orders' && method === 'GET') {
+      const { data, error } = await supabase
+        .from('orders')
+        .select(`
+          *,
+          products ( name )
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      return success(data);
+    }
+
+    // ===============================
+    // UPDATE ORDER STATUS
+    // ===============================
+    if (path === '/fulfill' && method === 'POST') {
+      const body = JSON.parse(event.body);
+
+      const { data, error } = await supabase
+        .from('orders')
+        .update({ status: body.status })
+        .eq('id', body.id)
+        .select();
+
+      if (error) throw error;
+
+      return success(data);
+    }
+
+    return notFound();
+
+  } catch (err) {
+    return failure(err.message);
+  }
 };
 
-function response(data, error, status = 200) {
+function success(data) {
   return {
-    statusCode: error ? 400 : status,
+    statusCode: 200,
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(error ? { error: error.message } : data)
+    body: JSON.stringify(data)
+  };
+}
+
+function failure(message) {
+  return {
+    statusCode: 400,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ error: message })
+  };
+}
+
+function notFound() {
+  return {
+    statusCode: 404,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ error: 'Not Found' })
   };
 }
