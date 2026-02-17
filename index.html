@@ -2,74 +2,33 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>Printsable</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Printsable</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-<h2 id="connection-status">Testing connection...</h2>
-<div class="layout">
 
-  <aside class="sidebar">
-    <h2>Printsable</h2>
-    <nav>
-      <div>Dashboard</div>
-      <div>Products</div>
-      <div>Orders</div>
-      <div>Fulfillment</div>
-    </nav>
-  </aside>
+  <h1>The Printsable</h1>
+  <h2>Place Your Order</h2>
 
-  <main class="main">
+  <form id="order-form">
+    <label>Product</label>
+    <select id="product-select" required></select>
 
-    <header class="topbar">
-      <h1>Admin Dashboard</h1>
-    </header>
+    <label>Your Name</label>
+    <input type="text" id="customer-name" required />
 
-    <section class="cards">
-      <div class="card">
-        <h3>Create Product</h3>
-        <input id="productName" placeholder="Product name" />
-        <button onclick="createProduct()">Add</button>
-      </div>
+    <label>Your Email</label>
+    <input type="email" id="customer-email" required />
 
-      <div class="card">
-        <h3>Create Order</h3>
-        <input id="orderDetails" placeholder="Order details" />
-        <button onclick="createOrder()">Add</button>
-      </div>
-    </section>
+    <label>Quantity</label>
+    <input type="number" id="quantity" value="1" min="1" />
 
-    <section class="card">
-      <h3>Products</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-          </tr>
-        </thead>
-        <tbody id="products"></tbody>
-      </table>
-    </section>
+    <label>Artwork File URL</label>
+    <input type="text" id="file-url" placeholder="Paste file link here" />
 
-    <section class="card">
-      <h3>Orders</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Details</th>
-            <th>Status</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="orders"></tbody>
-      </table>
-    </section>
+    <button type="submit">Submit Order</button>
+  </form>
 
-  </main>
-
-</div>
-
-<script src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
