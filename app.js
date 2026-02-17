@@ -1,25 +1,51 @@
-async function testConnection() {
-  try {
-    const response = await fetch('/.netlify/functions/api/products');
-    const data = await response.json();
+const productSelect = document.getElementById('product-select');
+const orderForm = document.getElementById('order-form');
 
-    console.log('Backend response:', data);
+// ==========================
+// LOAD PRODUCTS
+// ==========================
+async function loadProducts() {
+  const res = await fetch('/.netlify/functions/api/products');
+  const products = await res.json();
 
-    const status = document.getElementById('connection-status');
+  productSelect.innerHTML = '';
 
-    if (Array.isArray(data)) {
-      status.textContent = "✅ Backend Connected";
-      status.style.color = "green";
-    } else {
-      status.textContent = "⚠️ Unexpected Response";
-      status.style.color = "orange";
-    }
-  } catch (error) {
-    console.error(error);
-    const status = document.getElementById('connection-status');
-    status.textContent = "❌ Backend NOT Connected";
-    status.style.color = "red";
-  }
+  products.forEach(product => {
+    const option = document.createElement('option');
+    option.value = product.id;
+    option.textContent = `${product.name} - $${product.base_price}`;
+    productSelect.appendChild(option);
+  });
 }
 
-testConnection();
+// ==========================
+// SUBMIT ORDER
+// ==========================
+orderForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const orderData = {
+    product_id: productSelect.value,
+    customer_name: document.getElementById('customer-name').value,
+    customer_email: document.getElementById('customer-email').value,
+    quantity: parseInt(document.getElementById('quantity').value),
+    file_url: document.getElementById('file-url').value
+  };
+
+  const res = await fetch('/.netlify/functions/api/orders', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(orderData)
+  });
+
+  const result = await res.json();
+
+  if (res.ok) {
+    alert("Order Submitted Successfully!");
+    orderForm.reset();
+  } else {
+    alert("Error: " + result.error);
+  }
+});
+
+loadProducts();
