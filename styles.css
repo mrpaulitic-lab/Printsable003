@@ -98,3 +98,34 @@ td {
 .fulfilled {
   background: #dcfce7;
 }
+body {
+  font-family: Arial, sans-serif;
+  max-width: 800px;
+  margin: 40px auto;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+button {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.order-card {
+  background: #f7f7f7;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+}
+
+.status.pending {
+  color: orange;
+}
+
+.status.fulfilled {
+  color: green;
+}
