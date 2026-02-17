@@ -5,47 +5,60 @@ const orderForm = document.getElementById('order-form');
 // LOAD PRODUCTS
 // ==========================
 async function loadProducts() {
-  const res = await fetch('/.netlify/functions/api/products');
-  const products = await res.json();
+  try {
+    const res = await fetch('/.netlify/functions/api/products');
+    const products = await res.json();
 
-  productSelect.innerHTML = '';
+    productSelect.innerHTML = '';
 
-  products.forEach(product => {
-    const option = document.createElement('option');
-    option.value = product.id;
-    option.textContent = `${product.name} - $${product.base_price}`;
-    productSelect.appendChild(option);
-  });
+    products.forEach(product => {
+      const option = document.createElement('option');
+      option.value = product.id;
+      option.textContent = `${product.name} - $${product.base_price}`;
+      productSelect.appendChild(option);
+    });
+
+  } catch (error) {
+    console.error("Error loading products:", error);
+  }
 }
 
 // ==========================
-// SUBMIT ORDER
+// STRIPE CHECKOUT SUBMIT
 // ==========================
 orderForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  const orderData = {
-    product_id: productSelect.value,
-    customer_name: document.getElementById('customer-name').value,
-    customer_email: document.getElementById('customer-email').value,
-    quantity: parseInt(document.getElementById('quantity').value),
-    file_url: document.getElementById('file-url').value
-  };
+  try {
+    const orderData = {
+      product_id: productSelect.value,
+      customer_name: document.getElementById('customer-name').value,
+      customer_email: document.getElementById('customer-email').value,
+      quantity: parseInt(document.getElementById('quantity').value),
+      file_url: document.getElementById('file-url').value,
+      origin: window.location.origin
+    };
 
-  const res = await fetch('/.netlify/functions/api/orders', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(orderData)
-  });
+    const res = await fetch('/.netlify/functions/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData)
+    });
 
-  const result = await res.json();
+    const data = await res.json();
 
-  if (res.ok) {
-    alert("Order Submitted Successfully!");
-    orderForm.reset();
-  } else {
-    alert("Error: " + result.error);
+    if (data.url) {
+      // Redirect to Stripe Checkout
+      window.location.href = data.url;
+    } else {
+      alert("Stripe error: " + data.error);
+    }
+
+  } catch (error) {
+    console.error("Checkout error:", error);
+    alert("Something went wrong.");
   }
 });
 
+// Load products on page load
 loadProducts();
