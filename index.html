@@ -4,45 +4,58 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Printsable Creator Kit</title>
+
   <style>
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
+      font-family: Arial, sans-serif;
       background: #0f172a;
       color: white;
       text-align: center;
     }
 
     .container {
-      padding: 40px 20px;
       max-width: 800px;
       margin: auto;
+      padding: 40px 20px;
     }
 
     h1 {
       font-size: 2.5em;
+      margin-bottom: 10px;
     }
 
     .highlight {
       color: #22c55e;
     }
 
+    p {
+      font-size: 1.2em;
+      opacity: 0.9;
+    }
+
     .box {
       background: #1e293b;
-      padding: 20px;
-      margin: 20px 0;
-      border-radius: 10px;
+      padding: 25px;
+      margin: 30px 0;
+      border-radius: 12px;
       text-align: left;
+    }
+
+    .price {
+      font-size: 2em;
+      margin: 20px 0;
+      color: #22c55e;
     }
 
     button {
       background: #22c55e;
       color: black;
-      padding: 15px 30px;
-      border: none;
+      padding: 18px 40px;
       font-size: 18px;
+      border: none;
+      border-radius: 10px;
       cursor: pointer;
-      border-radius: 8px;
     }
 
     button:hover {
@@ -50,6 +63,7 @@
     }
   </style>
 </head>
+
 <body>
 
 <div class="container">
@@ -69,9 +83,9 @@
     </ul>
   </div>
 
-  <h2>$97 One-Time</h2>
+  <div class="price">$97 One-Time</div>
 
-  <button onclick="startCheckout('YOUR_STRIPE_PRICE_ID')">
+  <button onclick="startCheckout('price_1TCKuQFDSH6ZYT597LjxzqU0')">
     Get Instant Access
   </button>
 
@@ -82,25 +96,43 @@
 <script>
 const supabase = window.supabase.createClient(
   "https://rpjvvsknkxzvunzcszno.supabase.co",
-  "YOUR_ANON_KEY"
+  "sb_publishable_Sg29g7Bc5B3S2AEl0Qt6dg_1PPZQQGY"
 );
 
 // Capture affiliate
 const params = new URLSearchParams(window.location.search);
 const ref = params.get("ref");
-if (ref) localStorage.setItem("affiliate_ref", ref);
 
-// Checkout function
+if (ref) {
+  localStorage.setItem("affiliate_ref", ref);
+}
+
+// Checkout
 async function startCheckout(priceId) {
-  const affiliateCode = localStorage.getItem("affiliate_ref");
+  try {
+    const affiliateCode = localStorage.getItem("affiliate_ref");
 
-  const res = await fetch("/.netlify/functions/create-checkout", {
-    method: "POST",
-    body: JSON.stringify({ priceId, affiliateCode })
-  });
+    const response = await fetch("/.netlify/functions/create-checkout", {
+      method: "POST",
+      body: JSON.stringify({
+        priceId: priceId,
+        affiliateCode: affiliateCode
+      })
+    });
 
-  const data = await res.json();
-  window.location.href = data.url;
+    const data = await response.json();
+
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      alert("Checkout error");
+      console.error(data);
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong");
+  }
 }
 </script>
 
