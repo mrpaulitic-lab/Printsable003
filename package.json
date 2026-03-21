@@ -1,7 +1,10 @@
 {
-  "name": "printsable",
+  "name": "printable-functions",
   "version": "1.0.0",
+  "description": "Netlify Functions for Printsable",
+  "main": "index.js",
   "dependencies": {
-    "stripe": "^14.0.0"
+    "stripe": "^14.0.0",
+    "@supabase/supabase-js": "^2.0.0"
   }
 }
